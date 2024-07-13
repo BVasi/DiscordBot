@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from youtubesearchpython import *
 from pytube import YouTube
+import yt_dlp
 
 QUERY_LIMIT = int(1)
 FIRST_IN_QUEUE = int(0)
@@ -32,9 +33,21 @@ class musicManager(commands.Cog):
     def convertYoutubeUrlToOnlyAudioUrl(self):
         youtubeURL = self.musicQueue[FIRST_IN_QUEUE][URL]
         self.musicQueue.pop(FIRST_IN_QUEUE)
-        youtube = YouTube(youtubeURL)
-        audioStream = youtube.streams.filter(only_audio=True, file_extension="mp4").first()
-        return audioStream.url
+        # youtube = YouTube(youtubeURL)
+        # audioStream = youtube.streams.filter(only_audio=True, file_extension="mp4").first()
+        # return audioStream.url
+        ydl_opts = {
+        'format': 'bestaudio/best',
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+    }
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info_dict = ydl.extract_info(youtubeURL, download=False)
+            audio_url = info_dict[URL]
+            return audio_url
 
     def playAudio(self):
         audioSource = discord.FFmpegPCMAudio(source=self.convertYoutubeUrlToOnlyAudioUrl(), **self.FFMPEG_OPTIONS)
