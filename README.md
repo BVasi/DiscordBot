@@ -15,11 +15,6 @@
 ### 4. View the Bot's Logs
 ```docker logs -f discord-bot-container```
 
-### Stop the Container
-```docker stop discord-bot-container```
-
-### Delete the Container
-```docker rm discord-bot-container```
 
 # Useful Docker Commands:
 
